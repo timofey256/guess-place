@@ -22,14 +22,12 @@ public class GamesController : ControllerBase
         int gameID = _currentGames.Add(preferences);
         return Ok(gameID);
     }
-    
+
     [HttpGet("/get-video/")]
     public IActionResult GetVideoForRound([FromBody] int gameID)
     {
-        if (_currentGames.IsGameOver(gameID))
-        {
-            return BadRequest("Game is already over");
-        }
+        if (!_currentGames.Contains(gameID)) { return BadRequest("Bad ID : There is no such game."); }
+        if (_currentGames.IsGameOver(gameID)) { return BadRequest("Game is already over"); }
 
         _currentGames.IncreaseRound(gameID);
         GamePreferences preferences = _currentGames.GetPreferences(gameID);
@@ -40,7 +38,8 @@ public class GamesController : ControllerBase
     [HttpPost("/guess-location/")]
     public IActionResult GuessLocation([FromBody] int gameID, [FromBody] Coordinates guess)
     {
-        if (!_currentGames.Cointais(gameID)) return BadRequest("Bad ID : There is no such game.");
+        if (!_currentGames.Contains(gameID)) return BadRequest("Bad ID : There is no such game.");
+        
         Coordinates actual = _currentGames.getCoordsOfLastRound(gameID);
         return Ok(CoordinatesComparer.CompareCoordinates(actual, guess));
     }

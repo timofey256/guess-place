@@ -29,7 +29,7 @@ public class GamesRepository
         throw new NotImplementedException();
     }
 
-    public bool Cointais(int gameId)
+    public bool Contains(int gameId)
     {
         throw new NotImplementedException();
     }
