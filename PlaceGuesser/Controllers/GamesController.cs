@@ -9,7 +9,7 @@ namespace PlaceGuesser.Controllers;
 public class GamesController : ControllerBase
 {
     private readonly ILogger<GamesController> _logger;
-    private GamesRepository _currentGames = new GamesRepository();
+    private readonly GamesRepository _currentGames = new GamesRepository();
 
     public GamesController(ILogger<GamesController> logger)
     {
@@ -19,28 +19,37 @@ public class GamesController : ControllerBase
     [HttpPut("/create-game/")]
     public IActionResult CreateNewGame([FromBody] GamePreferences preferences)
     {
-        int gameID = _currentGames.Add(preferences);
-        return Ok(gameID);
+        int gameId = _currentGames.Add(preferences);
+        return Ok(gameId);
     }
 
     [HttpGet("/get-video/")]
-    public IActionResult GetVideoForRound([FromBody] int gameID)
+    public IActionResult GetVideoForRound([FromBody] int gameId)
     {
-        if (!_currentGames.Contains(gameID)) { return BadRequest("Bad ID : There is no such game."); }
-        if (_currentGames.IsGameOver(gameID)) { return BadRequest("Game is already over"); }
+        if (!_currentGames.Contains(gameId)) { return BadRequest("Bad ID : There is no such game."); }
+        if (_currentGames.IsGameOver(gameId)) { return BadRequest("Game is already over"); }
 
-        _currentGames.IncreaseRound(gameID);
-        GamePreferences preferences = _currentGames.GetPreferences(gameID);
-        VideoRepository.GetVideo(preferences);
-        return Ok(gameID);
+        GamePreferences preferences = _currentGames.GetPreferences(gameId);
+        Video video = VideoRepository.GetVideo(preferences);
+        
+        try
+        {
+            _currentGames.CreateNewRound(gameId, video);
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            return BadRequest("You already played all rounds");
+        }
+        
+        return Ok(video.Url);
     }
     
     [HttpPost("/guess-location/")]
-    public IActionResult GuessLocation([FromBody] int gameID, [FromBody] Coordinates guess)
+    public IActionResult GuessLocation([FromBody] int gameId, [FromBody] Coordinates guess)
     {
-        if (!_currentGames.Contains(gameID)) return BadRequest("Bad ID : There is no such game.");
+        if (!_currentGames.Contains(gameId)) return BadRequest("Bad ID : There is no such game.");
         
-        Coordinates actual = _currentGames.getCoordsOfLastRound(gameID);
+        Coordinates actual = _currentGames.GetCoordsOfLastRound(gameId);
         return Ok(CoordinatesComparer.CompareCoordinates(actual, guess));
     }
 }
