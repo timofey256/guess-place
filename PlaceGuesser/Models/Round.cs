@@ -2,12 +2,12 @@ namespace PlaceGuesser.Models;
 
 public struct Round
 {
+    public readonly string VideoId;
     public readonly Coordinates Coordinates;
-    public readonly string fileNameInStorage;
     
-    public Round(Coordinates coordinates, string fileName)
+    public Round(string id, Coordinates coordinates)
     {
         Coordinates = coordinates;
-        fileNameInStorage = fileName;
+        VideoId = id;
     }
 }

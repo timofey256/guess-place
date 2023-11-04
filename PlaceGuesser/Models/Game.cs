@@ -2,15 +2,24 @@ namespace PlaceGuesser.Models;
 
 public class Game
 {
-    public readonly int Id;
-    public readonly GamePreferences Preferences;
+    public readonly Continent Continent;
+    public readonly DayTime VideoType;
     public readonly int NumberOfRounds;
+    public int Score { get; set; }
     public List<Round> Rounds { get; private set; } = new List<Round>();
 
-    public Game(int id, GamePreferences preferences)
+    public Game(GamePreferences preferences)
     {
-        Id = id;
         NumberOfRounds = preferences.NumberOfRounds;
-        Preferences = preferences;
+        Continent = preferences.Continent;
+        VideoType = preferences.VideoType;
+    }
+
+    public void AddRound(Video video)
+    {
+        if (Rounds.Count >= NumberOfRounds)
+            throw new IndexOutOfRangeException("Can't add new round.");
+        
+        Rounds.Add(new Round(video.VideoId, video.Coordinates));
     }
 }

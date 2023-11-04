@@ -4,33 +4,45 @@ namespace PlaceGuesser.Repositories;
 
 public class GamesRepository
 {
+    private int _currentIndex = 0;
+    private Dictionary<int, Game> _games = new Dictionary<int, Game>();
+
+    public GamesRepository() { }
+    
     public int Add(GamePreferences preferences)
     {
-        throw new NotImplementedException();
+        var newGame = new Game(preferences);
+        _games.Add(_currentIndex, newGame);
+        _currentIndex++;
+        return _currentIndex-1;
     }
 
     public bool IsGameOver(int gameId)
     {
-        throw new NotImplementedException();
+        var game = _games[gameId];
+        return game.Rounds.Count == game.NumberOfRounds;
     }
 
-    public void IncreaseRound(int gameId)
+    public void CreateNewRound(int gameId, Video video)
     {
-        throw new NotImplementedException();
+        var game = _games[gameId];
+        game.AddRound(video);
     }
 
     public GamePreferences GetPreferences(int gameId)
     {
-        throw new NotImplementedException();
+        var game = _games[gameId];
+        return new GamePreferences() {Continent = game.Continent, VideoType = game.VideoType, NumberOfRounds = game.NumberOfRounds};
     }
 
-    public Coordinates getCoordsOfLastRound(int gameId)
+    public Coordinates GetCoordsOfLastRound(int gameId)
     {
-        throw new NotImplementedException();
+        var game = _games[gameId];
+        return game.Rounds[^1].Coordinates;
     }
 
     public bool Contains(int gameId)
     {
-        throw new NotImplementedException();
+        return _games.ContainsKey(gameId);
     }
 }
