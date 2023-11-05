@@ -9,13 +9,13 @@ namespace PlaceGuesser.Controllers;
 public class GamesController : ControllerBase
 {
     private readonly ILogger<GamesController> _logger;
-    private readonly GamesRepository _currentGames = new GamesRepository();
+    private GamesRepository _currentGames = new GamesRepository();
 
     public GamesController(ILogger<GamesController> logger)
     {
         _logger = logger;
     }
-
+    
     [HttpPut("/create-game/")]
     public IActionResult CreateNewGame([FromBody] GamePreferences preferences)
     {
@@ -23,7 +23,7 @@ public class GamesController : ControllerBase
         return Ok(gameId);
     }
 
-    [HttpGet("/get-video/")]
+    [HttpPost("/get-video/")]
     public IActionResult GetVideoForRound([FromBody] int gameId)
     {
         if (!_currentGames.Contains(gameId)) { return BadRequest("Bad ID : There is no such game."); }
@@ -45,11 +45,11 @@ public class GamesController : ControllerBase
     }
     
     [HttpPost("/guess-location/")]
-    public IActionResult GuessLocation([FromBody] int gameId, [FromBody] Coordinates guess)
+    public IActionResult GuessLocation([FromBody] Guess guess)
     {
-        if (!_currentGames.Contains(gameId)) return BadRequest("Bad ID : There is no such game.");
+        if (!_currentGames.Contains(guess.Id)) return BadRequest("Bad ID : There is no such game.");
         
-        Coordinates actual = _currentGames.GetCoordsOfLastRound(gameId);
-        return Ok(CoordinatesComparer.CompareCoordinates(actual, guess));
+        Coordinates actual = _currentGames.GetCoordsOfLastRound(guess.Id);
+        return Ok(CoordinatesComparer.CompareCoordinates(actual, Coordinates.ParseCoordinate(guess.Coordinates)));
     }
 }
