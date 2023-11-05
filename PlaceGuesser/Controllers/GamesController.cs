@@ -48,7 +48,6 @@ public class GamesController : ControllerBase
     public IActionResult GuessLocation([FromBody] Guess guess)
     {
         if (!_currentGames.Contains(guess.Id)) return BadRequest("Bad ID : There is no such game.");
-        
         Coordinates actual = _currentGames.GetCoordsOfLastRound(guess.Id);
         return Ok(CoordinatesComparer.CompareCoordinates(actual, Coordinates.ParseCoordinate(guess.Coordinates)));
     }
