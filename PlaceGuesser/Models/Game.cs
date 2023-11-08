@@ -2,22 +2,25 @@ using System.Text.Json.Serialization;
 
 namespace PlaceGuesser.Models;
 
-public class Game
+public record class Game
 {
-    public readonly Continent Continent;
-    public readonly DayTime VideoType;
-    public readonly int NumberOfRounds;
+    public Continent Continent { get; set;  }
+    
+    public DayTime VideoType { get; set; }
+    
+    public int NumberOfRounds { get; set; }
     public int Score { get; set; }
-    public List<Round> Rounds { get; private set; } = new List<Round>();
+    public List<Round> Rounds { get; } = new List<Round>();
     
     [JsonConstructor]
     public Game() { }
     
     public Game(GamePreferences preferences)
     {
-        NumberOfRounds = preferences.NumberOfRounds;
         Continent = preferences.Continent;
         VideoType = preferences.VideoType;
+        NumberOfRounds = preferences.NumberOfRounds;
+        Score = 0;
     }
 
     public void AddRound(Video video)
