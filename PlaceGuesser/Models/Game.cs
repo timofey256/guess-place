@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace PlaceGuesser.Models;
 
 public class Game
@@ -7,7 +9,10 @@ public class Game
     public readonly int NumberOfRounds;
     public int Score { get; set; }
     public List<Round> Rounds { get; private set; } = new List<Round>();
-
+    
+    [JsonConstructor]
+    public Game() { }
+    
     public Game(GamePreferences preferences)
     {
         NumberOfRounds = preferences.NumberOfRounds;
