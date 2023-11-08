@@ -3,17 +3,23 @@ using NRedisStack;
 using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
 using System.Text.Json;
+using PlaceGuesser.Exceptions;
 
 namespace PlaceGuesser.Repositories;
 
 public class GamesRepository
 {
-    private static readonly ConnectionMultiplexer Redis = ConnectionMultiplexer.Connect("localhost");
-    private static int _currentIndex = 0;
-    private IDatabase _db = Redis.GetDatabase();
+    private readonly ConnectionMultiplexer _redis;
+    private int _currentIndex = 0;
+    private readonly IDatabase _db;
 
-    public GamesRepository() { }
-        
+    public GamesRepository()
+    {
+        try { _redis = ConnectionMultiplexer.Connect("localhost"); }
+        catch (Exception e) { throw new AppRedisIsDownException(e.Message); }
+        _db = _redis.GetDatabase();
+    }
+
     public int Add(GamePreferences preferences)
     {
         var newGame = new Game(preferences);
@@ -22,7 +28,7 @@ public class GamesRepository
         _currentIndex += 1;
         return _currentIndex-1;
     }
-
+    
     public Game? Get(int gameId)
     {
         string? serializedGame = _db.StringGet(gameId.ToString());
@@ -33,7 +39,6 @@ public class GamesRepository
     {
         string? serializedGame = _db.StringGet(gameId.ToString());
         if (serializedGame == null) return true;
-        
         var game = JsonSerializer.Deserialize<Game>(serializedGame);
         return game?.NumberOfRounds == game?.Rounds.Count;
     }
@@ -46,8 +51,7 @@ public class GamesRepository
     public GamePreferences GetPreferences(int gameId)
     {
         string? serializedGame = _db.StringGet(gameId.ToString());
-        if (serializedGame == null) throw new ArgumentException("Unexpected gameID. There's no such ID in DB");
-        
+        if (serializedGame == null) throw new AppInvalidIdException(gameId);
         var game = JsonSerializer.Deserialize<Game>(serializedGame);
         return new GamePreferences() {Continent = game.Continent, NumberOfRounds = game.NumberOfRounds, VideoType = game.VideoType};
     }
@@ -55,7 +59,7 @@ public class GamesRepository
     public Coordinates GetCoordsOfLastRound(int gameId)
     {
         string? serializedGame = _db.StringGet(gameId.ToString());
-        if (serializedGame == null) throw new ArgumentException("Unexpected gameID. There's no such ID in DB");
+        if (serializedGame == null) throw new AppInvalidIdException(gameId);
         
         var game = JsonSerializer.Deserialize<Game>(serializedGame);
         return game.Rounds[^1].Coordinates;
