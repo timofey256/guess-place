@@ -10,8 +10,8 @@ namespace PlaceGuesser.Repositories;
 public class GamesRepository
 {
     private readonly ConnectionMultiplexer _redis;
-    private int _currentIndex = 0;
     private readonly IDatabase _db;
+    private static int _currentIndex = 0;
 
     public GamesRepository()
     {
