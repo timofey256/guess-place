@@ -13,6 +13,7 @@ public class GamesController : ControllerBase
 
     private const string _badGameIdResponseMessage = "Bad ID : There is no game with id=p{0}.";
     private const string _gameIsOverMessage = "Game with id={0} is already over.";
+    private const string _playedAllRoundsMessage = "You already played all rounds. Whole message: {0}";
 
     public GamesController(ILogger<GamesController> logger)
     {
@@ -41,7 +42,7 @@ public class GamesController : ControllerBase
         }
         catch (IndexOutOfRangeException e)
         {
-            return BadRequest($"You already played all rounds. Whole message: {e.Message}");
+            return BadRequest(string.Format(_playedAllRoundsMessage, e.Message));
         }
         
         return Ok(video.Url);
