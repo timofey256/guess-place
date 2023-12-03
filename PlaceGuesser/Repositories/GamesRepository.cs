@@ -4,10 +4,11 @@ using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
 using System.Text.Json;
 using PlaceGuesser.Exceptions;
+using PlaceGuesser.Interfaces;
 
 namespace PlaceGuesser.Repositories;
 
-public class GamesRepository
+public class GamesRepository : IGamesRepository
 {
     private readonly ConnectionMultiplexer _redis;
     private readonly IDatabase _db;
@@ -43,10 +44,10 @@ public class GamesRepository
         return game?.NumberOfRounds == game?.Rounds.Count;
     }
 
-    public void CreateNewRound(int gameId, Video video)
+    public void CreateNewRound(int gameId, Video? video)
     {
         throw new NotImplementedException();
-    }
+        }
 
     public GamePreferences GetPreferences(int gameId)
     {

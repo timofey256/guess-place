@@ -5,9 +5,8 @@ public struct Round
     public readonly string VideoId;
     public readonly Coordinates Coordinates;
     
-    public Round(string id, Coordinates coordinates)
+    public Round(int videoVideoId, string videoCoordinateN, string videoCoordinateE)
     {
-        Coordinates = coordinates;
-        VideoId = id;
+        throw new NotImplementedException();
     }
 }

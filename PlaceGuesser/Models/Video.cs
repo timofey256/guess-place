@@ -1,8 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PlaceGuesser.Models;
 
-public struct Video
+public class Video
 {
-    public readonly string VideoId;
-    public readonly Coordinates Coordinates;
-    public readonly string Url;
+    [Key]
+    public int VideoId { get; set; }
+    public string Filename { get; set; }
+    public string Continent { get; set; }
+    public string Country { get; set; }
+    public string CoordinateN { get; set; }
+    public string CoordinateE { get; set; }
+    public string? SourceUrl { get; set; }
 }

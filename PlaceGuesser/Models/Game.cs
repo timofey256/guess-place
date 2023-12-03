@@ -28,6 +28,6 @@ public record class Game
         if (Rounds.Count >= NumberOfRounds)
             throw new IndexOutOfRangeException("Can't add new round.");
         
-        Rounds.Add(new Round(video.VideoId, video.Coordinates));
+        Rounds.Add(new Round(video.VideoId, video.CoordinateN, video.CoordinateE));
     }
 }
